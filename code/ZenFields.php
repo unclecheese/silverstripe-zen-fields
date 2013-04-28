@@ -12,7 +12,7 @@
  * // Result: $fields->addFieldToTab("Root.Main", DropdownField::create("MyField", "My label", $source));
  *
  * </code>
- * Method names are defined by the FormField class, without the word "Field", with a lowercase first letter.
+ * Method names are defined by the FormField class, without the "Field" suffix removed, with a lowercase first letter.
  * e.g. 
  * CurrencyField -> currency()
  * TreeDropdownField -> treeDropdown()
@@ -24,13 +24,30 @@
  */
 class ZenFields extends Extension {
 
+	
+	/**
+	 * @var string  The name of the current tab
+	 */
 	protected $tab = "Main";
 
 
+
+	/**
+	 * @var  FormField The most recently added FormField
+	 */
 	protected $field;
 
 
 
+
+	/**
+	 * A wildcard method for accepting any FormField object as a method.
+	 * Ex: text(), currency(), dropdown(), treeDropdown(), htmlEditor()
+	 * 
+	 * @param   string The method being called
+	 * @param   array The arguments to the method
+	 * @return  FieldList
+	 */
 	public function __call($method, $args) {
 		$formFieldClass = ucfirst($method)."Field";
 		if(is_subclass_of($formFieldClass, "FormField")) {
@@ -56,6 +73,12 @@ class ZenFields extends Extension {
 
 
 
+
+	/**
+	 * Adds a FormField to the FieldList
+	 * 
+	 * @param   FormField The field to add
+	 */
 	public function add(FormField $field) {
 		if($this->owner->hasTabSet()) {
 			$before = ($this->tab == "Main" && $this->owner->dataFieldByName("Content")) ? "Content" : null;
@@ -68,6 +91,12 @@ class ZenFields extends Extension {
 
 
 
+	/**
+	 * Sets the current tab
+	 * 
+	 * @param  string The Tab name
+	 * @return  FieldList
+	 */
 	public function tab($tabname) {
 		$this->tab = $tabname;
 		return $this->owner;
@@ -75,6 +104,12 @@ class ZenFields extends Extension {
 
 
 
+
+	/**
+	 * Gets the most recently added field
+	 * 
+	 * @return  FormField
+	 */
 	public function field() {
 		return $this->field;
 	}
@@ -82,6 +117,11 @@ class ZenFields extends Extension {
 
 
 
+	/**
+	 * Adds a FieldGroup to the FieldList
+	 *
+	 * @return  FieldGroup
+	 */
 	public function group() {
 		$group = FieldGroup::create();
 		$group->FieldList = $this->owner;
@@ -92,6 +132,11 @@ class ZenFields extends Extension {
 
 
 
+	/**
+	 * Defines all possible methods for this class. Used to support wildcard methods
+	 * 
+	 * @return array
+	 */
 	public function allMethodNames() {
 		$methods = array (			
 			'tab',
@@ -99,7 +144,7 @@ class ZenFields extends Extension {
 			'group'
 		);
 		foreach(SS_ClassLoader::instance()->getManifest()->getDescendantsOf("FormField") as $field) {
-			$methods[] = strtolower(str_replace("Field","",$field));
+			$methods[] = strtolower(preg_replace('/Field$/',"",$field));
 		}
 
 		return $methods;
