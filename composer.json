@@ -1,0 +1,21 @@
+{
+    "name": "unclecheese/zen-fields",
+    "description": "Syntactic sugar for SilverStripe FieldLists",
+    "type": "silverstripe-module",
+    "keywords": ["silverstripe", "fields", "fieldlist", "forms"],
+	"license": "BSD-3-Clause",
+    "authors": [
+    {
+        "name": "Uncle Cheese",
+        "email": "unclecheese@leftandmain.com"
+    }
+    ],
+    "require":
+    {
+        "silverstripe/framework": "3.*",
+	    "silverstripe/cms": "3.*"
+    },
+    "extra": {
+	"installer-name": "zen_fields"
+    }    
+}
