@@ -59,8 +59,14 @@ class ZenFields extends Extension {
 			}
 			for($i = 2; $i <= 9; $i++) {
 				if(!isset($args[$i])) $args[$i] = null;
-			}						
-			$field = Object::create($formFieldClass, $args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6], $args[7], $args[8], $args[9]);
+			}
+			
+			// Hack! TextareaField doesn't accept more than three arguments.
+			if($formFieldClass == "TextareaField" || is_subclass_of($formFieldClass, "TextareaField")) {
+				$args = array_slice($args, 0, 3);
+			}
+			
+			$field = Injector::inst()->createWithArgs($formFieldClass, $args);//Object::create($formFieldClass, $args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6], $args[7], $args[8], $args[9]);
 			$this->add($field);
 			$this->field = $field;
 			$field->FieldList = $this->owner;
