@@ -60,13 +60,8 @@ class ZenFields extends Extension {
 			for($i = 2; $i <= 9; $i++) {
 				if(!isset($args[$i])) $args[$i] = null;
 			}
-			
-			// Hack! TextareaField doesn't accept more than three arguments.
-			if($formFieldClass == "TextareaField" || is_subclass_of($formFieldClass, "TextareaField")) {
-				$args = array_slice($args, 0, 3);
-			}
-			
-			$field = Injector::inst()->createWithArgs($formFieldClass, $args);//Object::create($formFieldClass, $args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6], $args[7], $args[8], $args[9]);
+						
+			$field = Injector::inst()->createWithArgs($formFieldClass, $args);
 			$this->add($field);
 			$this->field = $field;
 			$field->FieldList = $this->owner;
@@ -105,6 +100,7 @@ class ZenFields extends Extension {
 	 */
 	public function tab($tabname) {
 		$this->tab = $tabname;
+		
 		return $this->owner;
 	}
 
@@ -112,16 +108,89 @@ class ZenFields extends Extension {
 
 
 	/**
-	 * Gets the most recently added field
+	 * Because {@link TextareaField} has a definite argument signature, the __call() method 
+	 * fails because it passes several null arguments into the constructor.
 	 * 
-	 * @return  FormField
+	 * @todo  This is a hack.
+	 * @return FieldList
 	 */
-	public function field() {
-		return $this->field;
+	public function textarea() {
+		$field = Injector::inst()->createWithArgs("TextareaField",func_get_args());
+		$this->add($field);
+		$this->field = $field;
+		$field->FieldList = $this->owner;
+		
+		return $this->owner;
 	}
 
 
 
+
+	/**
+	 * A shortcut for creating an {@link UploadField} configured for images
+	 * 
+	 * @return  FieldList
+	 */
+	public function imageUpload() {
+		$field = Injector::inst()->createWithArgs("UploadField",func_get_args());
+		$field->imagesOnly();
+		$this->add($field);
+		$this->field = $field;
+		$field->FieldList = $this->owner;
+		
+		return $this->owner;
+	}
+
+
+
+
+	/**
+	 * A shortcut for creating a {@link GridField} configured for a simple has_many relation
+	 * 
+	 * @param  string $name The name of the grid
+	 * @param  string $title The title of the grid
+	 * @param  SS_List $list The grid data
+	 * @return   FieldList
+	 */
+	public function hasManyGrid($name, $title = null, $list = null) {
+		$grid = Injector::inst()->createWithArgs("GridField", array($name, $title, $list, GridFieldConfig_RecordEditor::create()));
+		$this->add($grid);
+		$this->field = $grid;
+		$grid->FieldList = $this->owner;
+		
+		return $this->owner;
+	}
+
+
+
+
+	/**
+	 * Gets a specific field, or the most recently added field
+	 * 
+	 * @param   string $fieldName If passed a field name, get that specific field by name
+	 * @return  FormField
+	 */
+	public function field($fieldName = null) {
+		return $fieldName ? $this->owner->dataFieldByName($fieldName) : $this->field;
+	}
+
+
+
+
+	/**
+	 * A shortcut that makes FieldList::removeByName() chainable
+	 * 
+	 * @param  string $fieldName The field to remove
+	 * @return   FieldList
+	 */
+	public function removeField($fieldName = null) {
+		$this->owner->removeByName($fieldName);
+
+		return $this->owner;
+	}
+
+
+	
 
 	/**
 	 * Adds a FieldGroup to the FieldList
@@ -147,12 +216,15 @@ class ZenFields extends Extension {
 		$methods = array (			
 			'tab',
 			'field',
-			'group'
+			'group',
+			'textarea',
+			'hasmanygrid',
+			'imageupload',
+			'removefield'
 		);
 		foreach(SS_ClassLoader::instance()->getManifest()->getDescendantsOf("FormField") as $field) {
 			$methods[] = strtolower(preg_replace('/Field$/',"",$field));
 		}
-
 		return $methods;
 	}
 
