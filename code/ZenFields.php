@@ -48,8 +48,12 @@ class ZenFields extends Extension {
 	 * @param   array The arguments to the method
 	 * @return  FieldList
 	 */
-	public function __call($method, $args) {
+	public function __call($method, $args) {		
 		$formFieldClass = ucfirst($method)."Field";
+		$getter = "get".ucfirst($method);
+		if($this->owner->hasMethod($getter)) {
+			return $this->owner->$getter();
+		}
 		if(is_subclass_of($formFieldClass, "FormField")) {
 			if(!isset($args[0])) {
 				user_error("FieldList::{$method} -- Missing argument 1 for field name", E_ERROR);
@@ -213,7 +217,8 @@ class ZenFields extends Extension {
 	 * @return array
 	 */
 	public function allMethodNames() {
-		$methods = array (			
+		$methods = array (	
+			'add',		
 			'tab',
 			'field',
 			'group',
