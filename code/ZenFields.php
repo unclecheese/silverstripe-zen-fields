@@ -13,7 +13,7 @@
  *
  * </code>
  * Method names are defined by the FormField class, without the "Field" suffix removed, with a lowercase first letter.
- * e.g. 
+ * e.g.
  * CurrencyField -> currency()
  * TreeDropdownField -> treeDropdown()
  *
@@ -24,7 +24,7 @@
  */
 class ZenFields extends Extension {
 
-	
+
 	/**
 	 * @var string  The name of the current tab
 	 */
@@ -43,12 +43,12 @@ class ZenFields extends Extension {
 	/**
 	 * A wildcard method for accepting any FormField object as a method.
 	 * Ex: text(), currency(), dropdown(), treeDropdown(), htmlEditor()
-	 * 
+	 *
 	 * @param   string The method being called
 	 * @param   array The arguments to the method
 	 * @return  FieldList
 	 */
-	public function __call($method, $args) {		
+	public function __call($method, $args) {
 		$formFieldClass = ucfirst($method)."Field";
 		$getter = "get".ucfirst($method);
 		if($this->owner->hasMethod($getter)) {
@@ -64,7 +64,7 @@ class ZenFields extends Extension {
 			for($i = 2; $i <= 9; $i++) {
 				if(!isset($args[$i])) $args[$i] = null;
 			}
-						
+
 			$field = Injector::inst()->createWithArgs($formFieldClass, $args);
 			$this->add($field);
 			$this->field = $field;
@@ -81,7 +81,7 @@ class ZenFields extends Extension {
 
 	/**
 	 * Adds a FormField to the FieldList
-	 * 
+	 *
 	 * @param   FormField The field to add
 	 */
 	public function add(FormField $field) {
@@ -91,20 +91,20 @@ class ZenFields extends Extension {
 		}
 		else {
 			$this->owner->push($field);
-		}		
+		}
 	}
 
 
 
 	/**
 	 * Sets the current tab
-	 * 
+	 *
 	 * @param  string The Tab name
 	 * @return  FieldList
 	 */
 	public function tab($tabname) {
 		$this->tab = $tabname;
-		
+
 		return $this->owner;
 	}
 
@@ -112,9 +112,9 @@ class ZenFields extends Extension {
 
 
 	/**
-	 * Because {@link TextareaField} has a definite argument signature, the __call() method 
+	 * Because {@link TextareaField} has a definite argument signature, the __call() method
 	 * fails because it passes several null arguments into the constructor.
-	 * 
+	 *
 	 * @todo  This is a hack.
 	 * @return FieldList
 	 */
@@ -123,7 +123,7 @@ class ZenFields extends Extension {
 		$this->add($field);
 		$this->field = $field;
 		$field->FieldList = $this->owner;
-		
+
 		return $this->owner;
 	}
 
@@ -132,7 +132,7 @@ class ZenFields extends Extension {
 
 	/**
 	 * A shortcut for creating an {@link UploadField} configured for images
-	 * 
+	 *
 	 * @return  FieldList
 	 */
 	public function imageUpload() {
@@ -141,7 +141,7 @@ class ZenFields extends Extension {
 		$this->add($field);
 		$this->field = $field;
 		$field->FieldList = $this->owner;
-		
+
 		return $this->owner;
 	}
 
@@ -150,7 +150,7 @@ class ZenFields extends Extension {
 
 	/**
 	 * A shortcut for creating a {@link GridField} configured for a simple has_many relation
-	 * 
+	 *
 	 * @param  string $name The name of the grid
 	 * @param  string $title The title of the grid
 	 * @param  SS_List $list The grid data
@@ -161,7 +161,7 @@ class ZenFields extends Extension {
 		$this->add($grid);
 		$this->field = $grid;
 		$grid->FieldList = $this->owner;
-		
+
 		return $this->owner;
 	}
 
@@ -170,7 +170,9 @@ class ZenFields extends Extension {
 
 	/**
 	 * Gets a specific field, or the most recently added field
-	 * 
+	 * Note: Accessing a FormField object is deprecated as field() conflicts with FormField::Field().
+	 * Use configure() instead.
+	 *
 	 * @param   string $fieldName If passed a field name, get that specific field by name
 	 * @return  FormField
 	 */
@@ -179,11 +181,20 @@ class ZenFields extends Extension {
 	}
 
 
+	/**
+	 * Gets the most recently added FormField
+	 *
+	 * @return FormField
+	 */
+	public function configure() {
+		return $this->field;
+	}
+
 
 
 	/**
 	 * A shortcut that makes FieldList::removeByName() chainable
-	 * 
+	 *
 	 * @param  string $fieldName The field to remove
 	 * @return   FieldList
 	 */
@@ -194,7 +205,7 @@ class ZenFields extends Extension {
 	}
 
 
-	
+
 
 	/**
 	 * Adds a FieldGroup to the FieldList
@@ -205,7 +216,7 @@ class ZenFields extends Extension {
 		$group = FieldGroup::create();
 		$group->FieldList = $this->owner;
 		$this->add($group);
-		return $group;	
+		return $group;
 	}
 
 
@@ -213,14 +224,15 @@ class ZenFields extends Extension {
 
 	/**
 	 * Defines all possible methods for this class. Used to support wildcard methods
-	 * 
+	 *
 	 * @return array
 	 */
 	public function allMethodNames() {
-		$methods = array (	
-			'add',		
+		$methods = array (
+			'add',
 			'tab',
 			'field',
+			'configure',
 			'group',
 			'textarea',
 			'hasmanygrid',
