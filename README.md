@@ -37,12 +37,12 @@ $fields
 ```
 
 ## Mutating fields after instantiation
-For chainability, each method returns the FieldList, so in order to access the FormField object, you must use the field() accessor, followed by end() to return to the FieldList object.
+For chainability, each method returns the FieldList, so in order to access the FormField object, you must use the configure() accessor, followed by end() to return to the FieldList object.
 ```php
 <?php
 $fields
   ->dropdown("PickOne")
-    ->field()
+    ->configure()
       ->setSource(array('1' => 'One', '2' => 'Two'))
       ->setEmptyString("-- None --")
     ->end()
