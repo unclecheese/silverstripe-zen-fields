@@ -82,4 +82,12 @@ $fields->addFieldToTab("Root.Main", FieldGroup::create(
   TextField::create("PostalCode")
 ));
 ```
-
+## Extras
+There are a few shortcut methods for adding common field configurations.
+```php
+<?php
+$fields
+  ->imageUpload("MyImage")
+  ->hasManyGrid("RelatedObjects","Related objects", $this->RelatedObjects())
+    ->configure()->addDragAndDrop("Sort")->end();
+```
