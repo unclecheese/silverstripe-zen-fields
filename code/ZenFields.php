@@ -61,9 +61,6 @@ class ZenFields extends Extension {
 			if(!isset($args[1])) {
 				$args[1] = FormField::name_to_label($args[0]);
 			}
-			for($i = 2; $i <= 9; $i++) {
-				if(!isset($args[$i])) $args[$i] = null;
-			}
 
 			$field = Injector::inst()->createWithArgs($formFieldClass, $args);
 			$this->add($field);
@@ -107,28 +104,6 @@ class ZenFields extends Extension {
 
 		return $this->owner;
 	}
-
-
-
-
-	/**
-	 * Because {@link TextareaField} has a definite argument signature, the __call() method
-	 * fails because it passes several null arguments into the constructor.
-	 *
-	 * @todo  This is a hack.
-	 * @return FieldList
-	 */
-	public function textarea() {
-		$field = Injector::inst()->createWithArgs("TextareaField",func_get_args());
-		$this->add($field);
-		$this->field = $field;
-		$field->FieldList = $this->owner;
-
-		return $this->owner;
-	}
-
-
-
 
 	/**
 	 * A shortcut for creating an {@link UploadField} configured for images
@@ -234,7 +209,6 @@ class ZenFields extends Extension {
 			'field',
 			'configure',
 			'group',
-			'textarea',
 			'hasmanygrid',
 			'imageupload',
 			'removefield'
