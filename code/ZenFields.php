@@ -133,7 +133,13 @@ class ZenFields extends Extension {
 	 */
 	public function hasManyGrid($name, $title = null, $list = null) {
 		$grid = Injector::inst()->createWithArgs("GridField", array($name, $title, $list, GridFieldConfig_RecordEditor::create()));
-		$this->add($grid);
+		if($list && $list instanceof UnsavedRelationList) {
+			$this->add($h = new HeaderField(_t('ZenFields.RELATIONNOTSAVED','You can add records once you have saved for the first time.')));
+		}
+		else {
+			$this->add($grid);
+		}
+
 		$this->field = $grid;
 		$grid->FieldList = $this->owner;
 
