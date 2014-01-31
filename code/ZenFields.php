@@ -92,6 +92,13 @@ class ZenFields extends Extension {
 	}
 
 
+	public function addField(FormField $field) {
+		$this->add($field);
+
+		return $this->owner;
+	}
+
+
 
 	/**
 	 * Sets the current tab
@@ -217,7 +224,8 @@ class ZenFields extends Extension {
 			'group',
 			'hasmanygrid',
 			'imageupload',
-			'removefield'
+			'removefield',
+			'addfield'
 		);
 		foreach(SS_ClassLoader::instance()->getManifest()->getDescendantsOf("FormField") as $field) {
 			$methods[] = strtolower(preg_replace('/Field$/',"",$field));
