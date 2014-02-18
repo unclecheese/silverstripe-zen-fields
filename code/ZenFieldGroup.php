@@ -29,7 +29,6 @@ class ZenFieldGroup extends ZenFields {
 	 * @return  FieldGroup
 	 */
 	public function add(FormField $field) {
-		echo " ngh ? <br />";
 		$this->owner->push($field);
 		return $this->owner;
 	}
