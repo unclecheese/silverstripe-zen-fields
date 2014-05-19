@@ -184,10 +184,11 @@ class ZenFields extends Extension {
 	 * A shortcut that makes FieldList::removeByName() chainable
 	 *
 	 * @param  string $fieldName The field to remove
+	 * @param  bool   $dataFieldOnly If true, do not remove dataless fields
 	 * @return   FieldList
 	 */
-	public function removeField($fieldName = null) {
-		$this->owner->removeByName($fieldName);
+	public function removeField($fieldName = null, $dataFieldOnly = false) {
+		$this->owner->removeByName($fieldName, $dataFieldOnly);
 
 		return $this->owner;
 	}
