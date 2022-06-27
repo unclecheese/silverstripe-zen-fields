@@ -1,19 +1,18 @@
-FieldList:
+SilverStripe\Forms\FieldList:
   extensions:
-    - ZenFields
-FieldGroup:
+    - UncleCheese\ZenFields\ZenFields
+SilverStripe\Forms\FieldGroup:
   extensions:
-    - ZenFieldGroup
-FormField:
+    - UncleCheese\ZenFields\ZenFieldGroup
+SilverStripe\Forms\FormField:
   extensions:
-    - ZenFormField
-GridField:
+    - UncleCheese\ZenFields\ZenFormField
+SilverStripe\Forms\GridField\GridField:
   extensions:
-    - ZenGridField
-UploadField:
+    - UncleCheese\ZenFields\ZenGridField
+SilverStripe\AssetAdmin\Forms\UploadField:
   extensions:
-    - ZenUploadField
-ZenFields:
+    - UncleCheese\ZenFields\ZenUploadField
+UncleCheese\ZenFields\ZenFields:
   gridfield_sortable_component_classes:
-    - GridFieldOrderableRows
-    - GridFieldSortableRows
+    - Symbiote\GridFieldExtensions\GridFieldOrderableRows

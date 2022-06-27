@@ -1,5 +1,17 @@
 <?php
 
+namespace UncleCheese\ZenFields;
+use SilverStripe\AssetAdmin\Forms\UploadField;
+use SilverStripe\Core\ClassInfo;
+use SilverStripe\Core\Extension;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Manifest\ClassLoader;
+use SilverStripe\Forms\FieldGroup;
+use SilverStripe\Forms\FormField;
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\HeaderField;
+use SilverStripe\ORM\UnsavedRelationList;
+
 /**
  * Provides shortcuts to adding fields to the main tab.
  *
@@ -22,7 +34,8 @@
  * @package ZenFields
  *
  */
-class ZenFields extends Extension {
+class ZenFields extends Extension
+{
 
 
 	/**
@@ -38,8 +51,6 @@ class ZenFields extends Extension {
 	protected $field;
 
 
-
-
 	/**
 	 * A wildcard method for accepting any FormField object as a method.
 	 * Ex: text(), currency(), dropdown(), treeDropdown(), htmlEditor()
@@ -48,13 +59,15 @@ class ZenFields extends Extension {
 	 * @param   array The arguments to the method
 	 * @return  FieldList
 	 */
-	public function __call($method, $args) {
-		$formFieldClass = ucfirst($method)."Field";
+	public function __call($method, $args)
+    {
 		$getter = "get".ucfirst($method);
 		if($this->owner->hasMethod($getter)) {
 			return $this->owner->$getter();
 		}
-		if(is_subclass_of($formFieldClass, "FormField")) {
+        $formFieldClass = "SilverStripe\\Forms\\" . ucfirst($method)."Field";
+
+		if(is_subclass_of($formFieldClass, FormField::class)) {
 			if(!isset($args[0])) {
 				user_error("FieldList::{$method} -- Missing argument 1 for field name", E_ERROR);
 			}
@@ -73,15 +86,13 @@ class ZenFields extends Extension {
 		}
 	}
 
-
-
-
 	/**
 	 * Adds a FormField to the FieldList
 	 *
 	 * @param   FormField The field to add
 	 */
-	public function add(FormField $field) {
+	public function add(FormField $field)
+    {
 		if($this->owner->hasTabSet()) {
 			$before = ($this->tab == "Main" && $this->owner->dataFieldByName("Content")) ? "Content" : null;
 			$this->owner->addFieldToTab("Root.{$this->tab}",$field, $before);
@@ -92,7 +103,8 @@ class ZenFields extends Extension {
 	}
 
 
-	public function addField(FormField $field) {
+	public function addField(FormField $field)
+    {
 		$this->add($field);
 
 		return $this->owner;
@@ -106,7 +118,8 @@ class ZenFields extends Extension {
 	 * @param  string The Tab name
 	 * @return  FieldList
 	 */
-	public function tab($tabname) {
+	public function tab($tabname)
+    {
 		$this->tab = $tabname;
 
 		return $this->owner;
@@ -118,7 +131,7 @@ class ZenFields extends Extension {
 	 * @return  FieldList
 	 */
 	public function imageUpload() {
-		$field = Injector::inst()->createWithArgs("UploadField",func_get_args());
+		$field = Injector::inst()->createWithArgs(UploadField::class,func_get_args());
 		$field->imagesOnly();
 		$this->add($field);
 		$this->field = $field;
@@ -126,9 +139,6 @@ class ZenFields extends Extension {
 
 		return $this->owner;
 	}
-
-
-
 
 	/**
 	 * A shortcut for creating a {@link GridField} configured for a simple has_many relation
@@ -138,8 +148,9 @@ class ZenFields extends Extension {
 	 * @param  SS_List $list The grid data
 	 * @return   FieldList
 	 */
-	public function hasManyGrid($name, $title = null, $list = null) {
-		$grid = Injector::inst()->createWithArgs("GridField", array($name, $title, $list, GridFieldConfig_RecordEditor::create()));
+	public function hasManyGrid($name, $title = null, $list = null)
+    {
+		$grid = Injector::inst()->createWithArgs(GridField::class, array($name, $title, $list, GridFieldConfig_RecordEditor::create()));
 		if($list && $list instanceof UnsavedRelationList) {
 			$this->add($h = new HeaderField(_t('ZenFields.RELATIONNOTSAVED','You can add records once you have saved for the first time.')));
 		}
@@ -164,7 +175,8 @@ class ZenFields extends Extension {
 	 * @param   string $fieldName If passed a field name, get that specific field by name
 	 * @return  FormField
 	 */
-	public function field($fieldName = null) {
+	public function field($fieldName = null)
+    {
 		return $fieldName ? $this->owner->dataFieldByName($fieldName) : $this->field;
 	}
 
@@ -174,7 +186,8 @@ class ZenFields extends Extension {
 	 *
 	 * @return FormField
 	 */
-	public function configure() {
+	public function configure()
+    {
 		return $this->field;
 	}
 
@@ -187,7 +200,8 @@ class ZenFields extends Extension {
 	 * @param  bool   $dataFieldOnly If true, do not remove dataless fields
 	 * @return   FieldList
 	 */
-	public function removeField($fieldName = null, $dataFieldOnly = false) {
+	public function removeField($fieldName = null, $dataFieldOnly = false)
+    {
 		$this->owner->removeByName($fieldName, $dataFieldOnly);
 
 		return $this->owner;
@@ -201,15 +215,13 @@ class ZenFields extends Extension {
 	 *
 	 * @return  FieldGroup
 	 */
-	public function group() {
+	public function group()
+    {
 		$group = FieldGroup::create();
 		$group->FieldList = $this->owner;
 		$this->add($group);
 		return $group;
 	}
-
-
-
 
 	/**
 	 * Defines all possible methods for this class. Used to support wildcard methods
@@ -228,11 +240,11 @@ class ZenFields extends Extension {
 			'removefield',
 			'addfield'
 		);
-		foreach(SS_ClassLoader::instance()->getManifest()->getDescendantsOf("FormField") as $field) {
-			$methods[] = strtolower(preg_replace('/Field$/',"",$field));
+		foreach(ClassLoader::instance()->getManifest()->getDescendantsOf(FormField::class) as $field) {
+            $shortName = ClassInfo::shortName($field);
+			$methods[] = strtolower(preg_replace('/Field$/',"",$shortName));
 		}
 		return $methods;
 	}
-
 
 }

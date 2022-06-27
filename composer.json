@@ -19,7 +19,9 @@
     "silverstripe/framework": "^4",
     "silverstripe/cms": "^4"
   },
-  "extra": {
-    "installer-name": "zen_fields"
+  "autoload": {
+    "psr-4": {
+      "UncleCheese\\ZenFields\\": "src/"
+    }
   }
 }
