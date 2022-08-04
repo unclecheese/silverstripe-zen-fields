@@ -240,7 +240,7 @@ class ZenFields extends Extension
 			'removefield',
 			'addfield'
 		);
-		foreach(ClassLoader::instance()->getManifest()->getDescendantsOf(FormField::class) as $field) {
+		foreach(ClassLoader::inst()->getManifest()->getDescendantsOf(FormField::class) as $field) {
             $shortName = ClassInfo::shortName($field);
 			$methods[] = strtolower(preg_replace('/Field$/',"",$shortName));
 		}
