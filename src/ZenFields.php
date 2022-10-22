@@ -13,6 +13,7 @@ use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\Forms\HeaderField;
 use SilverStripe\ORM\UnsavedRelationList;
+use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 
 /**
  * Provides shortcuts to adding fields to the main tab.
@@ -135,6 +136,15 @@ class ZenFields extends Extension
 	public function imageUpload() {
 		$field = Injector::inst()->createWithArgs(UploadField::class,func_get_args());
 		$field->imagesOnly();
+		$this->add($field);
+		$this->field = $field;
+		$field->FieldList = $this->owner;
+
+		return $this->owner;
+	}
+
+	public function htmlEditor() {
+		$field = Injector::inst()->createWithArgs(HTMLEditorField::class, func_get_args());
 		$this->add($field);
 		$this->field = $field;
 		$field->FieldList = $this->owner;
