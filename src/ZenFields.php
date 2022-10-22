@@ -143,6 +143,20 @@ class ZenFields extends Extension
 		return $this->owner;
 	}
 
+	/**
+	 * A shortcut for creating an {@link UploadField} 
+	 *
+	 * @return  FieldList
+	 */
+	public function upload() {
+		$field = Injector::inst()->createWithArgs(UploadField::class,func_get_args());
+		$this->add($field);
+		$this->field = $field;
+		$field->FieldList = $this->owner;
+
+		return $this->owner;
+	}
+
 	public function htmlEditor() {
 		$field = Injector::inst()->createWithArgs(HTMLEditorField::class, func_get_args());
 		$this->add($field);
